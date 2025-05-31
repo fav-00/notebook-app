@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Notebook App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f6f6f6;
+      color: #111;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    #note-input {
+      width: 100%;
+      min-height: 100px;
+      max-height: 300px;
+      padding: 10px;
+      font-size: 16px;
+      resize: none;
+      background-color: #ddd;
+      border: none;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    #notetext {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .note {
+      background-color: #ddd;
+      width: 150px;
+      height: 150px;
+      padding: 10px;
+      box-sizing: border-box;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .note-buttons {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+    }
+
+    .note-buttons button {
+      margin-left: 5px;
+      font-size: 12px;
+      padding: 2px 6px;
+    }
+  </style>
+</head>
+<body>
+  <h1>NOTEBOOK APP</h1>
+  <textarea id="note-input" placeholder="write note...." oninput="autoGrow(this)"></textarea>
+  <br>
+  <button onclick="addNote()">Save</button>
+  <div id="notetext"></div>
+
+  <script>
+    let notes = JSON.parse(localStorage.getItem("notes")) || [];
+
+    function saveNotes() {
+      localStorage.setItem("notes", JSON.stringify(notes));
+    }
+
+    function renderNotes() {
+      const container = document.getElementById("notetext");
+      container.innerHTML = '';
+
+      notes.forEach((note, index) => {
+        const noteDiv = document.createElement('div');
+        noteDiv.className = 'note';
+
+        const text = document.createElement('div');
+        text.textContent = note.text;
+        noteDiv.appendChild(text);
+
+        const buttonsDiv = document.createElement('div');
+        buttonsDiv.className = 'note-buttons';
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = () => {
+          const newText = prompt("Edit your note:", note.text);
+          if (newText !== null) {
+            notes[index].text = newText.trim();
+            saveNotes();
+            renderNotes();
+          }
+        };
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.onclick = () => {
+          notes.splice(index, 1);
+          saveNotes();
+          renderNotes();
+        };
+
+        buttonsDiv.appendChild(editBtn);
+        buttonsDiv.appendChild(deleteBtn);
+        noteDiv.appendChild(buttonsDiv);
+
+        container.appendChild(noteDiv);
+      });
+    }
+
+    function addNote() {
+      const input = document.getElementById("note-input");
+      const text = input.value.trim();
+      if (text === '') return;
+
+      notes.push({ text });
+      saveNotes();
+      renderNotes();
+      input.value = '';
+      input.style.height = "100px"; // reset height
+    }
+
+    function autoGrow(element) {
+      element.style.height = "auto";
+      element.style.height = (element.scrollHeight) + "px";
+    }
+
+    renderNotes();
+  </script>
+</body>
+</html>
