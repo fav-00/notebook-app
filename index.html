@@ -49,27 +49,32 @@
       cursor: pointer;
     }
 
-    #notetext {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-    }
+   
+   #notetext {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 20px;
+  justify-items: center;
+  align-items: start;
+  padding: 10px;
+}
 
-    .note {
-      background-color: rgba(255, 68, 0, 0.199);
-      width: 150px;
-      height: 150px;
-      padding: 10px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      font-weight: bold;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-    }
+.note {
+  background-color: #ddd;
+  width: 120px;
+  height: 120px;
+  padding: 10px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: bold;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  border-radius: 4px;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
 
     .note-buttons {
       position: absolute;
