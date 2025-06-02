@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Notebook App</title>
   <style>
     * {
@@ -11,70 +11,69 @@
       box-sizing: border-box;
     }
 
-    html, body {
-      height: 100%;
-    }
-
     body {
-      font-family: Arial, sans-serif;
-      background-color: #53311542;
-      color: #111;
-      display: flex;
-      flex-direction: column;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
       padding: 20px;
-      overflow-y: auto;
     }
 
     h1 {
-      margin-bottom: 10px;
       text-align: center;
+      margin-bottom: 20px;
+      color: #4A2C2A;
     }
 
     #note-input {
       width: 100%;
+      max-width: 600px;
       min-height: 100px;
-      max-height: 300px;
       padding: 10px;
       font-size: 16px;
       resize: none;
-      background-color: rgba(165, 42, 42, 0.021);
-      border: none;
-      margin-bottom: 10px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin: 0 auto 10px;
+      display: block;
     }
 
     button {
-      padding: 8px 16px;
+      display: block;
+      margin: 10px auto 20px;
+      padding: 10px 20px;
       font-size: 14px;
-      margin-bottom: 20px;
+      background-color: #4a2c2a;
+      color: white;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
     }
 
-   
-   #notetext {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 20px;
-  justify-items: center;
-  align-items: start;
-  padding: 10px;
-}
+    #notetext {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 16px;
+      justify-items: center;
+    }
 
-.note {
-  background-color: #ddd;
-  width: 120px;
-  height: 120px;
-  padding: 10px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-weight: bold;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  border-radius: 4px;
-  box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-}
+    .note {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: bold;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .note:hover {
+      transform: scale(1.03);
+    }
 
     .note-buttons {
       position: absolute;
@@ -83,28 +82,47 @@
     }
 
     .note-buttons button {
-      margin-left: 5px;
-      font-size: 12px;
-      padding: 2px 6px;
+      font-size: 10px;
+      padding: 3px 6px;
+      margin-left: 4px;
+      border: none;
+      border-radius: 3px;
+      background-color: #222;
+      color: white;
+      cursor: pointer;
     }
 
     @media (max-width: 600px) {
+      #note-input {
+        width: 90%;
+      }
+
       .note {
-        width: 100%;
-        height: auto;
-        min-height: 100px;
+        width: 100% !important;
       }
     }
   </style>
 </head>
 <body>
   <h1>NOTEBOOK APP</h1>
-  <textarea id="note-input" placeholder="Write note..." oninput="autoGrow(this)"></textarea>
-  <button onclick="addNote()">Save</button>
+  <textarea id="note-input" placeholder="Write a note..." oninput="autoGrow(this)"></textarea>
+  <button onclick="addNote()">Save Note</button>
   <div id="notetext"></div>
 
   <script>
     const notes = JSON.parse(localStorage.getItem("notes")) || [];
+
+    const colors = ['#FFD700', '#ADFF2F', '#FF69B4', '#87CEFA', '#FFB6C1', '#DDA0DD', '#F0E68C', '#E6E6FA'];
+    
+    function randomColor() {
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function randomSize() {
+      const width = Math.floor(Math.random() * 80 + 120); // 120 - 200px
+      const height = Math.floor(Math.random() * 80 + 100); // 100 - 180px
+      return { width, height };
+    }
 
     function saveNotes() {
       localStorage.setItem("notes", JSON.stringify(notes));
@@ -118,6 +136,11 @@
         const noteDiv = document.createElement('div');
         noteDiv.className = 'note';
 
+       
+        noteDiv.style.backgroundColor = note.color;
+        noteDiv.style.width = note.width + "px";
+        noteDiv.style.height = note.height + "px";
+
         const text = document.createElement('div');
         text.textContent = note.text;
         noteDiv.appendChild(text);
@@ -129,7 +152,7 @@
         editBtn.textContent = 'Edit';
         editBtn.onclick = () => {
           const newText = prompt("Edit your note:", note.text);
-          if (newText !== null) {
+          if (newText !== null && newText.trim() !== "") {
             notes[index].text = newText.trim();
             saveNotes();
             renderNotes();
@@ -157,7 +180,16 @@
       const text = input.value.trim();
       if (text === '') return;
 
-      notes.push({ text });
+      const size = randomSize();
+      const color = randomColor();
+
+      notes.push({
+        text,
+        color,
+        width: size.width,
+        height: size.height
+      });
+
       saveNotes();
       renderNotes();
       input.value = '';
